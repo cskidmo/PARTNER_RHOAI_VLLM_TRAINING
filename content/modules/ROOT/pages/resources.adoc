@@ -1,7 +1,4 @@
-:imagesdir: ../assets/images
-
-[#resources]
-= LLM Compressor, Model Quantization and Sparsification techniques and recipes
+= Resources for Additional Learning
 
 == Existing slides
 
@@ -22,7 +19,7 @@ https://rhpds.github.io/showroom-summit2025-lb2959-neural-magic/modules/index.ht
 * Understanding why you SHOULD NOT quantize your own model (and the small number of use cases where you should)
 * Compressing a model using an existing recipe
 
-= LLM evaluation with GuideLLM
+== LLM evaluation with GuideLLM
 
 == Existing lab resources
 
@@ -46,11 +43,12 @@ https://github.com/taylorjordanNC/evals_workshop[^]
 * Understanding common LLM metrics
 * Configuring --max-num-seqs based on performance tests
 
-# Guide with Resources
+=== Guide with Resources
 
-https://docs.google.com/document/d/1W4-oUkftWhDcyDl78UZpaGKEbsVKj-KCLqwPqTrHfQc/edit?usp=sharing
+. Comprehensive Guide Document + 
+https://docs.google.com/document/d/1W4-oUkftWhDcyDl78UZpaGKEbsVKj-KCLqwPqTrHfQc/edit?usp=sharing[^]
 
-= Inference Server on Multiple Platforms
+== Inference Server on Multiple Platforms
 
 == Existing lab resources
 
@@ -78,8 +76,8 @@ https://rhpds.github.io/showroom-summit2025-lb2959-neural-magic/modules/index.ht
 . RH Inference server docs - key vLLM serving arguments +
 https://docs.redhat.com/en/documentation/red_hat_ai_inference_server/3.1/html-single/vllm_server_arguments/index#key-server-arguments-server-arguments
 
-. vLLM: Optimizing and Serving Models on OpenShift AI
-https://redhatquickcourses.github.io/genai-vllm/genai-vllm/1/index.html
+. vLLM: Optimizing and Serving Models on OpenShift AI + 
+https://redhatquickcourses.github.io/genai-vllm/genai-vllm/1/index.html[^]
 
 == Potential Topics to Cover in the Lab
 
@@ -88,7 +86,10 @@ https://redhatquickcourses.github.io/genai-vllm/genai-vllm/1/index.html
 
 * Managing service accounts for other apps
 
-[#troubleshooting]
-=== Troubleshooting vLLM instances
+== Model Evaluation Resources
 
-* Where to find events/logs
+. Getting started with LM-Eval + 
+https://github.com/trustyai-explainability/llama-stack-provider-lmeval/blob/main/demos/00-getting_started_with_lmeval.ipynb[^]
+
+. TrustyAI LM-Eval Tutorial + 
+https://trustyai.org/docs/main/lm-eval-tutorial#_examples[^]

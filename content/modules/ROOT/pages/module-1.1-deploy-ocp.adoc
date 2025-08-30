@@ -88,7 +88,8 @@ curl http://rhaiis-vllm.rhaiis.svc.cluster.local:8000/v1/models
 
 Expect the following output with the model object details:
 
-image::verify-model.png[]
+// TODO: Add verify-model.png image
+// image::verify-model.png[]
 
 NOTE: If you are not getting the expected output, please check the status of the model deployment. Remember to ensure the model pod is in a **Running** state.
 
