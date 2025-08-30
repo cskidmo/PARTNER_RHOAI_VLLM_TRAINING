@@ -123,4 +123,4 @@ oc -n llm-hosting run curl --image=curlimages/curl --restart=Never -it --rm -- \
 
 ## Conclusion
 
-We now have our model car deployed and will move on to model optimization and evaluation.
+We now have our model car deployed and will move on to model optimization and evaluation!

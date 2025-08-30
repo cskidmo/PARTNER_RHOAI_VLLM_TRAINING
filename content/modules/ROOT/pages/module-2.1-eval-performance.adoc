@@ -2,7 +2,7 @@
 
 [#eval-performance]
 # Evaluating System Performance with GuideLLM
-
+// TODO: Review and add more info around the parameters being changed in the different runs.
 In Generative AI systems, evaluating system performance including latency, throughput, and resource utilization is just as important as evaluating model accuracy or quality. Here's why:
 
 . **User Experience**: High latency leads to sluggish interactions, which is unacceptable in chatbots, copilots, and real-time applications. Users expect sub-second responses.
@@ -23,7 +23,9 @@ GuideLLM is now officially a part of the vLLM upstream project. This toolset is 
 
 ### Trusty AI vs GuideLLM
 
-Trusty AI maintains the scope of responsable AI, while GuideLLM is focused on benchmarking and model optimization. That being said, there are some current crossovers. Trusty AI incorporates lm-eval-harness and GuideLLM is roadmapped to include this test harness as well. Trusty AI will continue to be an incorporated and supported operator deployment in RHOAI. There are currently no plans to have a similar deployment method for GuideLLM. 
+Trusty AI currently has the scope of responsable AI, while GuideLLM is focused on benchmarking and model optimization. That being said, there are some current crossovers. Trusty AI incorporates lm-eval-harness for model accuracy and Ragas for accuracy on custom datasets. GuideLLM is roadmapped to include the lm-eval-harness test framework as well. 
+
+Trusty AI will continue to be an incorporated and supported operator deployment in RHOAI. There are currently no plans to have a similar deployment method for GuideLLM.
 
 ## Set Up GuideLLM tekton pipeline
 
@@ -33,13 +35,15 @@ There are several current ways you may deploy and use GuideLLM.
 * Python library: Not yet in current upstream documentation. You can see an example here in this guide: https://redhatquickcourses.github.io/genai-vllm/genai-vllm/1/rhoai_deploy/guide_llm.html. 
 * Kubernetes job: https://github.com/rh-aiservices-bu/guidellm-pipeline 
 * Tekton pipeline: https://github.com/jhurlocker/guidellm-pipeline.git (forked from above repo) 
-** Run the below command to install the Tekton CLI
+** Run the below command to install the Tekton CLI if you do not have it already installed.
 +
 [source,console,role=execute,subs=attributes+]
 ----
 curl -sL $(curl -s https://api.github.com/repos/tektoncd/cli/releases/latest | grep "browser_download_url.*_Linux_x86_64.tar.gz" | cut -d '"' -f 4) | sudo tar -xz -C /usr/local/bin tkn
 tkn version
 ----
+
+NOTE: This will prompt you for your computer's password.
 
 For our lab today, we will utilize the tekton pipeline on our OpenShift AI cluster. A pipeline deployment provides the following benefits:
 
@@ -51,20 +55,15 @@ For our lab today, we will utilize the tekton pipeline on our OpenShift AI clust
 * Version control / auditability
 * Better handling of complex, multi-stage workflows
 
-First, clone the benchmark pipeline repo, apply the PVC, task, and pipeline. We'll also create an s3 bucket in Minio where the pipeline will upload the benchmark results.
+First we will apply the PVC, task, and pipeline. We'll also create an s3 bucket in Minio where the pipeline will upload the benchmark results. The necessary files are in repository you have already cloned. This is a rudimentary deployment due to workshop timing restrictions and we would have this instead in a kustomize or helm deployment, depending on your preference.
 
 [source,console,role=execute,subs=attributes+]
 ----
-https://github.com/jhurlocker/guidellm-pipeline.git 
-----
-
-[source,console,role=execute,subs=attributes+]
-----
-oc apply -f guidellm-pipeline/pipeline/upload-results-task.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/guidellm-pipeline.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/pvc.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/guidellm-benchmark-task.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/mino-bucket.yaml -n vllm
+oc apply -f workshop_code/guidellm-pipeline/upload-results-task.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/guidellm-pipeline.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/pvc.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/guidellm-benchmark-task.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/mino-bucket.yaml -n llm-hosting
 ----
 
 Before running the pipeline, let's review the options for GuideLLM more closely.
@@ -158,17 +157,17 @@ Set your external model inference endpoint
 
 [source,console,role=execute,subs=attributes+]
 ----
-export INFERENCE_ENDPOINT=$(oc get inferenceservice granite-8b -n vllm -o jsonpath='{.status.url}')
+export INFERENCE_ENDPOINT=$(oc get inferenceservice granite-8b -n llm-hosting -o jsonpath='{.status.url}')
 ----
 
 Run the pipeline with necessary parameters in a terminal. Accept the defaults when prompted. If you chose a different model adjust the *target* parameter. 
 
 [source,console,role=execute,subs=attributes+]
 ----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
-  --param model-name="granite-8b" \               
-  --param processor="ibm-granite/granite-3.3-8b-instruct" \       
+tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
+  --param model-name="granite-8b" \
+  --param processor="ibm-granite/granite-3.3-8b-instruct" \
   --param data-config="prompt_tokens=512,output_tokens=128" \
   --param max-seconds="30" \
   --param huggingface-token="" \
@@ -179,13 +178,40 @@ tkn pipeline start guidellm-benchmark-pipeline -n vllm \
   --workspace name=shared-workspace,claimName=guidellm-output-pvc  
 ----
 
-Download the benchmark results from the *guidellm-benchmark* bucket in Minio and open the *benchmark-<TIMESTAMP>.txt* in a text editor.
+Running this command will provide you another command to follow the pipeline as it runs. You may use the CLI or UI to view the pipeline run progression.
 
-Get the route to the Minio UI. The login is *_admin/admin123_*
+If in the UI:
+
+1. Navigate to PipelineRuns in the llm-hosting namespace and select the v1 version of PipelineRun.
+
++
+image::find-pipelineruns.png[]
++
+
+2. Ensure you're in the right namespace.
+
++
+image::find-project-plr.png[]
++
+
+3. Select the **Instances** tab and select your pipeline run.
+
++
+image::plr-instances.png[]
++
+
+4. Take a look at your PipelineRun details.
+
+5. Download the benchmark results from the *guidellm-benchmark* bucket in Minio and open the *benchmark-<TIMESTAMP>.txt* in a text editor.
+
+To get to the MinIO user interface, get the route to the Minio UI. The login is:
+
+User: *minio*
+Password: *minio123*
 
 [source,console,role=execute,subs=attributes+]
 ----
-oc get route minio-ui -n ic-shared-minio -o jsonpath='{.spec.host}'
+oc get route console -n ic-shared-minio -o jsonpath='{.spec.host}'
 ----
 
 Minio bucket
@@ -196,7 +222,7 @@ Benchmark results
 
 image::benchmark_results_minio.png[benchmark results]
 
-### Evaluate Output and Adjust GuideLLM Settings
+## Evaluate Output and Adjust GuideLLM Settings
 
 GuideLLM captures the following metrics during a full sweep:
 
@@ -260,8 +286,8 @@ Test a typical conversational AI scenario with short prompts and responses:
 
 [source,console,role=execute]
 ----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
+tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
   --param model-name="granite-8b" \
   --param processor="ibm-granite/granite-3.3-8b-instruct" \
   --param data-config="prompt_tokens=256,output_tokens=128" \
@@ -281,8 +307,8 @@ Test document-heavy workloads with large context windows:
 
 [source,console,role=execute]
 ----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
+tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
   --param model-name="granite-8b" \
   --param processor="ibm-granite/granite-3.3-8b-instruct" \
   --param data-config="prompt_tokens=4096,output_tokens=512" \
@@ -302,8 +328,8 @@ Test balanced input/output for development use cases:
 
 [source,console,role=execute]
 ----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
+tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
   --param model-name="granite-8b" \
   --param processor="ibm-granite/granite-3.3-8b-instruct" \
   --param data-config="prompt_tokens=512,output_tokens=512" \
@@ -320,39 +346,39 @@ tkn pipeline start guidellm-benchmark-pipeline -n vllm \
 
 ### Exercise 2: Rate Type Deep Dive
 
-Different rate types reveal distinct performance characteristics critical for technical consulting. Select one option to test during this exercise due to time restrictions.
+Different rate types reveal distinct performance characteristics.
+// TODO: Adjust guidellm pipeline to allow for this throughput test run.
+// #### Exercise 2a: Peak Capacity Assessment (Throughput)
+// Determine maximum theoretical performance:
 
-#### Exercise 2a: Peak Capacity Assessment (Throughput)
-Determine maximum theoretical performance:
+// [source,console,role=execute]
+// ----
+// tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+//   --param target=$INFERENCE_ENDPOINT:8080/v1 \
+//   --param model-name="granite-8b" \
+//   --param processor="ibm-granite/granite-3.3-8b-instruct" \
+//   --param data-config="prompt_tokens=512,output_tokens=256" \
+//   --param max-seconds="30" \
+//   --param huggingface-token="" \
+//   --param api-key="" \
+//   --param rate="0" \
+//   --param rate-type="throughput" \
+//   --param max-concurrency="10" \
+//   --workspace name=shared-workspace,claimName=guidellm-output-pvc
+// ----
 
-[source,console,role=execute]
-----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
-  --param model-name="granite-8b" \
-  --param processor="ibm-granite/granite-3.3-8b-instruct" \
-  --param data-config="prompt_tokens=512,output_tokens=256" \
-  --param max-seconds="30" \
-  --param huggingface-token="" \
-  --param api-key="" \
-  --param rate="2" \
-  --param rate-type="throughput" \
-  --param max-concurrency="10" \
-  --workspace name=shared-workspace,claimName=guidellm-output-pvc
-----
+// **Technical Consulting Value**: 
+// - Establishes theoretical maximum capacity for infrastructure sizing
+// - Identifies hardware bottlenecks and scaling limits
+// - Provides baseline for capacity planning and cost modeling
 
-**Technical Consulting Value**: 
-- Establishes theoretical maximum capacity for infrastructure sizing
-- Identifies hardware bottlenecks and scaling limits
-- Provides baseline for capacity planning and cost modeling
-
-#### Exercise 2b: Real-World Load Simulation (Constant)
+#### Exercise 2a: Real-World Load Simulation (Constant)
 Test sustained production loads:
 
 [source,console,role=execute]
 ----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
+tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
   --param model-name="granite-8b" \
   --param processor="ibm-granite/granite-3.3-8b-instruct" \
   --param data-config="prompt_tokens=512,output_tokens=256" \
@@ -370,13 +396,13 @@ tkn pipeline start guidellm-benchmark-pipeline -n vllm \
 - Identifies latency degradation patterns as load increases
 - Supports SLA definition and performance guarantees
 
-#### Exercise 2c: Burst Traffic Analysis (Poisson)
+#### Exercise 2b: Burst Traffic Analysis (Poisson)
 Test irregular, bursty workloads typical in enterprise environments:
 
 [source,console,role=execute]
 ----
-tkn pipeline start guidellm-benchmark-pipeline -n vllm \
-  --param target=$INFERENCE_ENDPOINT/v1 \
+tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
   --param model-name="granite-8b" \
   --param processor="ibm-granite/granite-3.3-8b-instruct" \
   --param data-config="prompt_tokens=512,output_tokens=256" \
