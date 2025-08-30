@@ -2,7 +2,7 @@
 [#eval-accuracy]
 # Evaluating Model Accuracy with Trusty AI lm-eval-harness service
 
-While performance metrics like latency and throughput are critical for deploying efficient GenAI systems, **task-level accuracy and reasoning quality** are equally essential for selecting or fine-tuning a model. In this activity, we use the popular lm-eval-harness framework to evaluate how well a language model performs across established benchmarks, focusing on reasoning and subject matter understanding.
+While performance metrics like latency and throughput are critical for deploying efficient GenAI systems, **task-level accuracy and reasoning quality** are equally essential for selecting or fine-tuning a model. In this activity, we use the lm-eval-harness framework to evaluate how well a language model performs across established benchmarks, focusing on reasoning and subject matter understanding.
 
 ## What is Trusty AI?
 
@@ -20,11 +20,11 @@ https://trustyai.org/docs/main/main[TrustyAI^] is an open-source AI explainabili
 
 The framework supports both open-source models and OpenAI-compatible endpoints, and can be customized with additional tasks, prompt templates, and evaluation metrics.
 
-## MMLU-Pro
+## ARC-Easy
 
-Today we will be running the mmlu_pro evaluation. 
+Today we will be running the ARC-Easy evaluation. 
 
-**MMLU-Pro** is a reasoning-focused, multiple-choice benchmark derived from the original https://huggingface.co/datasets/cais/mmlu[MMLU dataset^]. MMLU-Pro extends the original MMLU benchmark by introducing 10-option multiple-choice questions across diverse academic disciplines. It's designed to test a model's **reasoning, factual recall, and elimination skills**—key for enterprise AI.
+**ARC-Easy** (AI2 Reasoning Challenge - Easy) is a **science reasoning benchmark** that tests a model's ability to answer elementary and middle-school level science questions. Part of the broader https://allenai.org/data/arc[ARC dataset^], ARC-Easy contains **multiple-choice science questions** that require basic scientific knowledge and reasoning skills. It's designed to test a model's **factual knowledge, logical reasoning, and comprehension abilities** in scientific domains—essential capabilities for enterprise AI applications that need reliable, factual responses.
 
 ## Today's Activity
 
@@ -36,15 +36,13 @@ In this section of our lab we will:
 
 ### Setup Trusty AI
 
-. Fist, we'll change the trustyai managementState from "Removed" to "Managed" in the default DataScienceCluster.
+. Fist, we'll change the TrustyAI managementState from "Removed" to "Managed" in the default DataScienceCluster. This activates the TrustyAI operator resource.
 +
 [source,console,role=execute,subs=attributes+]
 ----
 oc patch datasciencecluster default-dsc -p '{"spec":{"components":{"trustyai":{"managementState":"Managed"}}}}' --type=merge
 ----
 +
-https://github.com/trustyai-explainability/llama-stack-provider-lmeval/blob/main/demos/00-getting_started_with_lmeval.ipynb
-https://trustyai.org/docs/main/lm-eval-tutorial#_examples
 
 . Configure TrustyAI to allow downloading remote datasets from Huggingface
 +
@@ -96,7 +94,7 @@ To start an evaluation, apply an `LMEvalJob` custom resource as defined in the f
 +
 [source,console,role=execute,subs=attributes+]
 ----
-oc apply -f workshop_code/evals/trusty/arc_easy.yaml -n vllm
+oc apply -f workshop_code/evals/trusty/arc_easy.yaml -n llm-hosting
 ----
 +
 Check out the arc_easy.yaml file to learn more about the `LMEvalJob` specification.
@@ -106,23 +104,27 @@ You can watch the progress of your evaluation job by running:
 +
 [source,console,role=execute,subs=attributes+]
 ----
-watch oc logs -f arc-easy-eval-job -n vllm
+oc logs -f arc-easy-eval-job -n llm-hosting
 ----
 +
 You will see progression in percentage points.
 +
-or alternatively the logs of the model pod:
+Or alternatively the logs of the model pod:
 +
 [source,console,role=execute,subs=attributes+]
 ----
-oc logs -f granite-8b-predictor-<exact-pod-name> -n vllm
+oc logs -f granite-8b-predictor-<exact-pod-name> -n llm-hosting
 ----
-+
-You will see the exact questions getting passed to the model endpoint.
-+
+
+You will see the exact questions getting passed to the model endpoint!
+
+If you use the OpenShift console to look at the job pod logs, you'll see this:
+
+image::arc-eval-progress.png[]
+
 This evaluation run will take approximately 10 minutes.
 
-. While You Wait: What is lm-eval-harness?
+#### While You Wait: What is lm-eval-harness?
 
 * Check out this https://github.com/EleutherAI/lm-evaluation-harness/blob/main/examples/lm-eval-overview.ipynb[overview notebook^] to explore extensibility and task definitions.
 
@@ -146,11 +148,11 @@ This evaluation run will take approximately 10 minutes.
 
 . Check out the results
 +
-After the evaluation finishes (it took about 8.5 minutes on my cluster), you can take a look at the results. These are stored in the `status.results` field of the LMEvalJob resource:
+After the evaluation finishes (it took about 8.5 minutes on our test cluster), you can take a look at the results. These are stored in the `status.results` field of the LMEvalJob resource:
 +
 [source,console,role=execute,subs=attributes+]
 ----
-oc get LMEvalJob arc-easy-eval-job -n vllm -o jsonpath='{.status.results}' | jq '.results'
+oc get LMEvalJob arc-easy-eval-job -n llm-hosting -o jsonpath='{.status.results}' | jq '.results'
 ----
 +
 returns:

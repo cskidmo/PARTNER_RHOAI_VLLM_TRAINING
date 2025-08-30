@@ -86,8 +86,7 @@ Type the following to verify the model is up and running:
 curl http://rhaiis-vllm.rhaiis.svc.cluster.local:8000/v1/models
 ----
 
-Expect the following output with the model object details:
-
+// Expect the following output with the model object details:
 // TODO: Add verify-model.png image
 // image::verify-model.png[]
 
