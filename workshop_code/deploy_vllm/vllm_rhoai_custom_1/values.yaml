@@ -47,4 +47,4 @@ tolerations:
   - effect: NoSchedule
     key: nvidia.com/gpu
     value: "l40-gpu"
-    operator: Exists
+    operator: Equal
