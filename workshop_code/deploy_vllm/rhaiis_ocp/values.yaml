@@ -23,6 +23,7 @@ configuration:
     size: 20Gi
     emptyDir: {}
     pvc:
+      storageClassName: gp3-csi
       accessModes:
         - ReadWriteOnce
     image:
