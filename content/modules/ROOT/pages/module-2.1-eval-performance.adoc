@@ -391,7 +391,7 @@ tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
   --workspace name=shared-workspace,claimName=guidellm-output-pvc
 ----
 
-**Technical Consulting Value**:
+**Technical Value**:
 - Validates performance under realistic sustained loads
 - Identifies latency degradation patterns as load increases
 - Supports SLA definition and performance guarantees
@@ -415,10 +415,54 @@ tkn pipeline start guidellm-benchmark-pipeline -n llm-hosting \
   --workspace name=shared-workspace,claimName=guidellm-output-pvc
 ----
 
-**Technical Consulting Value**:
+**Technical Value**:
 - Models real-world traffic patterns with natural variability
 - Reveals queue management and batching effectiveness
 - Supports autoscaling configuration and resource allocation
+
+### Exercise 3: Viewing Results in GuideLLM UI
+
+There are many ways you may visualize the benchmark data, and we will see some of these ways in the optimization lab. However, the GuideLLM team provides a great way to visualize the data in a web browser. This UI spec could also be taken and containerized to include in your OpenShift deployment. Let's see what this could look like with simple html browser access.
+
+Add our UI-specific GuideLLM pipeline manifests:
+
+[source,console,role=execute,subs=attributes+]
+----
+oc apply -f workshop_code/guidellm-pipeline-ui/guidellm-pipeline-ui.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline-ui/guidellm-benchmark-task-ui.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline-ui/upload-results-task-ui.yaml -n llm-hosting
+----
+
+Now, complete another benchmark run, this time with a specified output path to `html` format. (You may adjust the command with different parameters if you'd like - just ensure the output path is set to `benchmarks.html`)
+
+[source,console,role=execute]
+----
+tkn pipeline start guidellm-benchmark-pipeline-ui -n llm-hosting \
+  --param target=$INFERENCE_ENDPOINT:8080/v1 \
+  --param model-name="granite-8b" \
+  --param processor="ibm-granite/granite-3.3-8b-instruct" \
+  --param data-config="prompt_tokens=256,output_tokens=128" \
+  --param max-seconds="30" \
+  --param huggingface-token="" \
+  --param api-key="" \
+  --param rate="2" \
+  --param rate-type="sweep" \
+  --param max-concurrency="10" \
+  --param output-path="benchmarks.html" \
+  --workspace name=shared-workspace,claimName=guidellm-output-pvc
+----
+
+Track this pipeline run in the UI as we did previously. Once complete, you will go back to the Minio Console to retrieve the tar file:
+
+image::download-tar.png[]
+
+You will download this file to your local machine, open the folder, and open the resulting `benchmarks.html` file in your preferred browser. You will see the following:
+
+image::guidellm-ui.png[]
+
+NOTE: During testing for this workshop the html rendering did not register the model name and workload details. Please focus on the metrics section of the UI. This will be addressed with engineering.
+
+This is a great way to visualize the benchmark results and present to customers. 
 
 ### Exercise 3: Comparative Analysis Framework
 

@@ -47,8 +47,6 @@ a|[.bordershadow]
 image::02/maas.png[width="100%"]
 |===
 
-
-
 == Module 1 Goals: Step into the Platform Engineer Role
 
 In this first module, you will take your first step into the role of a platform engineer enabling Generative AI at scale.
@@ -61,3 +59,21 @@ In this first module, you will take your first step into the role of a platform 
 **Your Learning Outcome:**
 
 By completing this module, you'll understand how to transform raw GPU infrastructure into a scalable, manageable Model-as-a-Service foundation. This platform will serve as the cornerstone for AI-powered applications across your organization.
+
+== Deploy the Granite Model (DO NOT SKIP)
+
+Before we do anything, we need to ensure we have the right model deployed for our activities. We may already have a Granite model deployed, but for this exercise we have to use some different configurations to work with the 3scale API Management product. 
+
+Uninstall your current Granite helm deployment:
+
+[source,sh,role=execute]
+----
+helm uninstall granite-8b
+----
+
+Deploy the Granite model with the following command (ensure you are at the right path locally in your terminal to execute this command):
+
+[source,sh,role=execute]
+----
+oc apply -k workshop_code/granite-8b -n llm-hosting
+----

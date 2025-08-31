@@ -29,7 +29,7 @@ NOTE: You could also retrieve the credentials by navigating to the location of t
 
 * Navigate to the OpenShift console
 
-https://console-openshift-console.{openshift_cluster_ingress_domain}/[https://console-openshift-console.{openshift_cluster_ingress_domain}/,window=_blank]
+https://console-openshift-console.{openshift_cluster_ingress_domain}
 
 * Select the terminal icon in the top navigation bar
 
@@ -51,9 +51,9 @@ NOTE: Save these values separately for the next step in your preferred notes app
 
 === Log into the Admin Portal
 
-Go to: https://maas-admin.{openshift_cluster_ingress_domain}/[https://maas-admin.{openshift_cluster_ingress_domain}/,window=_blank] 
+Go to: https://maas-admin.{openshift_cluster_ingress_domain} 
 
-Use the credentials you just retrieved.
+Use the credentials you just retrieved to log in.
 
 You will be prompted by a wizard window. Close it by clicking on the top right corner of the screen.
 
@@ -112,7 +112,7 @@ image::03/03-3scale-remove-access-code.png[width="75%"]
 
 // Add role shifting phrasing
 
-Visit the portal at: https://maas.{openshift_cluster_ingress_domain}[https://maas.{openshift_cluster_ingress_domain},window=_blank].
+Visit the portal at: https://maas.{openshift_cluster_ingress_domain}
 
 Signing in:
 
@@ -123,7 +123,7 @@ image::03/03-3scale-signin-button.png[width="75%"]
 +
 You will log in using the following credentials:
 
-* Your username: `{user}`
+* Your username: `user1`
 * Your password: `openshift`
 +
 

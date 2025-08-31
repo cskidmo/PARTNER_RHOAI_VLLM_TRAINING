@@ -9,16 +9,16 @@ Let's get connected.
 
 == Getting connected to OpenShift AI
 
-// If you are accessing these instructions through the workshop, the information below will render properly with unique values. If you are accessing the instructions separately for your own cluster, you will see placeholder values instead.
+IMPORTANT: Since you are accessing these instructions separately from your lab cluster, you will see placeholder values. You will need to use the links and credentials provided in the workshop login screen for each step, or easily plug in the cluster ingress domain to the provided URLs. The only URLs not provided originally to you are the 3scale links. You can find these in OpenShift routes or use the provided URL templates to get there.
 
 OpenShift AI provides a web-based dashboard interface to easily deploy and manage AI models.
 
 **Open the OpenShift AI Dashboard**
 
-* Click to open the following URL in a new tab or window and log in:
-** https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/[https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}/,window=_blank]
+* Use the following URL in a new tab or window and log in:
+** https://rhods-dashboard-redhat-ods-applications.{openshift_cluster_ingress_domain}
 
-NOTE: At any point, you can access the OpenShift Container Platform web console by going to the following URL: https://console-openshift-console.{openshift_cluster_ingress_domain}/[https://console-openshift-console.{openshift_cluster_ingress_domain}/,window=_blank]. 
+NOTE: At any point, you can access the OpenShift Container Platform web console by going to the following URL: https://console-openshift-console.{openshift_cluster_ingress_domain} 
 
 * Click on the `Login with OpenShift` button:
 +
@@ -26,8 +26,8 @@ NOTE: At any point, you can access the OpenShift Container Platform web console 
 image::02/02-01-login3.png[width="75%"]
 
 * Enter your credentials:
-** Your username: `{user}`
-** Your password: `{password}`
+** Your username: user1
+** Your password: (Use the **user1** password from the workshop credential information you received on Day 1)
 
 +
 [.bordershadow]
