@@ -9,6 +9,15 @@
 * xref:module-3.0-optimization-intro.adoc#optimization-intro[Module 3: Optimizing vLLM Performance]
 ** xref:module-3.1-optimization-practice.adoc#optimization-practice[Module 3.1: Optimizing vLLM Performance]
 ** xref:module-3.2-optimization-conclusion.adoc#optimization-conclusion[Module 3.2: Optimization Conclusion]
+* xref:module-4.0-maas-intro.adoc#maas_introduction[Module 4: Model-as-a-Service Infrastructure]
+** xref:module-4.1-maas-model.adoc#maas_model[Module 4.1: MaaS Model Setup]
+** xref:module-4.2-maas-api.adoc#maas_api[Module 4.2: API Gateway Integration]
+** xref:module-4.3-maas-code-assistant.adoc#maas_code_assistant[Module 4.3: Code Assistant Implementation]
+** xref:module-4.4-maas-code-game.adoc#maas_code_game[Module 4.4: Interactive Code Game]
+** xref:module-4.5-maas-analytics.adoc#maas_analytics[Module 4.5: Analytics & Monitoring]
+** xref:module-4.6-maas-closing.adoc#maas_closing[Module 4.6: MaaS Conclusion]
+* xref:module-5.0-agentic-intro.adoc#agentic-intro[Module 5: Agentic AI for Operations]
+** xref:module-5.1-agentic-mcp-devops.adoc#agentic-mcp-devops[Module 5.1: MCP Server Integration]
 
 * Reference Materials
 ** xref:reference-optimization-qualifying.adoc#optimization-qualifying[Enterprise Optimization Guide]
