@@ -12,7 +12,7 @@ In this module, we will use Helm to deploy RH Inference Server on OpenShift. The
 
 === Clone the Workshop Repository
 
-Clone the following repository:
+Clone the following repository, you will use it a lot over the course of our training:
 
 [source,sh,role=execute]
 ----
