@@ -3,7 +3,7 @@
 * Deep dive presentation 
 - link:https://docs.google.com/presentation/d/1_CKoP4EcjKNv7ykYplQNIjvyru9xp2Hn/edit[LLM Compressor Deep Dive]
 
-=== Challenges with running larger models
+== Challenges with running larger models
 
 Even with the latest hardware like NVIDIA B200 GPUs offering up to 192GB of memory, the rapid increase in model sizes (e.g., GPT MoE 1.8T parameters) means that many state-of-the-art models cannot fit into a single GPU or even across multiple GPUs without optimization.
 

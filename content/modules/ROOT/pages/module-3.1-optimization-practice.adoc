@@ -498,7 +498,10 @@ Similarly, check out FP4 versions when Nvidia Blackwell hardware is available.
 
 Please refer to the compatiblity chart https://docs.vllm.ai/en/latest/features/quantization/supported_hardware.html[^] for up to date quantization support in vLLM.
 
-. Let us try to run a w8a8 int8 model with the original vLLM engine arguments we started with. Update the _workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml_ with the following values. Make sure you update the *uri* with the correct model.
+. Let us try to run a w8a8 int8 model with the original vLLM engine arguments we started with. Update the _workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml_ with the following values. Make sure you update the *uri* with the correct model. 
+
+NOTE: Leave everything else below this section in the file unchanged.
+
 +
 [source,sh,role=execute]
 ----
@@ -518,11 +521,16 @@ model:
 +
 [source,sh,role=execute]
 ----
-helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
-  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n vllm
+helm uninstall granite-8b
 ----
 
-. After the model redeploys update the _/guidellm-pipeline/pipeline/guidellm-pipelinerun.yaml_ *rate* to 1.0, 4.0, 8.0, 16.0. 
+[source,sh,role=execute]
+----
+helm install granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
+  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n llm-hosting
+----
+
+. After the model redeploys (this will take a moment as you are pulling a new model car down) update the _/workshop_code/guidellm-pipeline/guidellm-pipelinerun.yaml_ *rate* to 1.0, 4.0, 8.0, 16.0. 
 +
 image::benchmark_rate_1_4_8_16.png[set the rate to 4, align="left"]
 
@@ -530,10 +538,10 @@ image::benchmark_rate_1_4_8_16.png[set the rate to 4, align="left"]
 +
 [source,sh,role=execute]
 ----
-oc create -f guidellm-pipeline/pipeline/guidellm-pipelinerun.yaml -n vllm
+oc create -f workshop_code/guidellm-pipeline/guidellm-pipelinerun.yaml -n llm-hosting
 ----
 
-. After the pipeline finishes go to your OpenShift AI workbench and open the _graph_benchmarks.ipynb_ file. Execute the first cell to download the latest benchmark file.
+. After the pipeline finishes go back to your OpenShift AI workbench and open the _graph_benchmarks.ipynb_ file. Execute the first cell to download the latest benchmark file.
 
 . Copy and paste the code snippet below into the second cell or edit your code to be the same. This code extracts the median TTFT from our first benchmark run with the full weight Granite model and extracts the median TTFT from the most recent benchmark with the quantized version.
 +
@@ -615,6 +623,8 @@ substantial architectural differences.
 
 What to try: You'll need to specify a smaller draft model. A good starting point for Llama/granite might be a smaller Llama/granite variant or as in this 
 example a speculator trained specifically for our use-case. 
+
+NOTE: We are working on OpenShift AI instructions for speculative decoding with engineering.
 
 
 // TO DO: Address Speculative decoding in RHOAI
