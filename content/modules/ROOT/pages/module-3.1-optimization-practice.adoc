@@ -111,6 +111,17 @@ If you didn't add the redhat-ai-services helm chart repository (you should have 
 helm repo add redhat-ai-services https://redhat-ai-services.github.io/helm-charts/
 helm repo update redhat-ai-services
 ----
+
+Additionally, if you did not add all of the necessary pipeline manifests from Module 2 into your cluster, please do so now:
+
+[source,console,role=execute,subs=attributes+]
+----
+oc apply -f workshop_code/guidellm-pipeline/upload-results-task.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/guidellm-pipeline.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/pvc.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/guidellm-benchmark-task.yaml -n llm-hosting
+oc apply -f workshop_code/guidellm-pipeline/mino-bucket.yaml -n llm-hosting
+----
 ====
 
 . Login to OpenShift AI and go to your *LLM Host* Data Science Project. Wait until the model fully deploys (green check) before continuing. 

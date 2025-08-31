@@ -9,7 +9,7 @@ tabs:
  - name: Jupyter Lab
    port: '9443'
    path: '/'
- - name: Llamastack Docs
+ - name: Llama Stack Docs
    url: 'https://llama-stack.readthedocs.io/en/latest/'
  - name: Cats
    url: 'https://cats.com'
