@@ -93,3 +93,12 @@ https://github.com/trustyai-explainability/llama-stack-provider-lmeval/blob/main
 
 . TrustyAI LM-Eval Tutorial + 
 https://trustyai.org/docs/main/lm-eval-tutorial#_examples[^]
+
+== Helpful Repositories
+
+https://github.com/redhat-ai-americas/rhoai-demo-setup
+
+https://github.com/redhat-ai-services/helm-charts
+
+https://github.com/rh-aiservices-bu/vllm-quickstart 
+

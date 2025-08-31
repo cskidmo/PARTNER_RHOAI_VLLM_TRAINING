@@ -15,18 +15,19 @@ Before diving into tuning, it's important to understand the key performance cons
 
 *Throughput*: The number of requests (or tokens) processed per unit of time. While we're optimizing for latency, higher throughput often means better resource utilization, which can indirectly help avoid latency spikes due to queuing.
 
-. First we'll need to re-deploy the granite-3.3-8b-instruct. Open a terminal and login to your OpenShift cluster. Recreate our project name `vllm`.
+. First we'll need to re-deploy the granite-3.3-8b-instruct. Open a terminal and login to your OpenShift cluster. Navigate to our **llm-hosting** project:
 +
 [source,sh,role=execute]
 ----
-oc project vllm
+oc project llm-hosting
 ----
 
-. We'll be deploying granite-3.3-8b-instruct through the vllm-kserve helm chart again.
+. We'll be re-deploying granite-3.3-8b-instruct through the vllm-kserve helm chart.
 
 . Open the `workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml` file to view the new arguments we will pass to the deployment. Your new file looks like the one below to facilitate the optimization exercises:
+
 +
-[source,sh,role=execute]
+[source,yaml]
 ----
 deploymentMode: RawDeployment
 
@@ -36,8 +37,47 @@ model:
   uri: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
   args:
     - "--disable-log-requests"
-    - "--max-num-seqs=32"
+    - "--max-num-seqs=1"
     - "--max-model-len=2048"
+
+image:
+  # -- The vLLM model server image
+  image: 'quay.io/modh/vllm'
+
+  # -- The tag or sha for the model server image
+  tag: rhoai-2.22-cuda-5e9c649953464aa3a668aba1774e42fc933f721b
+
+  # -- The vLLM version that will be displayed in the RHOAI Dashboard.  If not set, the appVersion of the chart will be used.
+  runtimeVersionOverride: ""
+
+  # -- Resource configuration for the vLLM container
+resources:
+  requests:
+    cpu: '2'
+    memory: 8Gi
+    nvidia.com/gpu: '1'
+  limits:
+    cpu: '2'
+    memory: 16Gi
+    nvidia.com/gpu: '1'
+
+# Disable external route creation to avoid NetworkPolicy issues
+endpoint:
+  externalRoute:
+    enabled: false
+
+# Move vLLM args to ServingRuntime so they actually work
+servingRuntime:
+  args:
+    - "--port=8080"
+    - "--model=/mnt/models"
+
+# -- The tolerations to be applied to the model server pod.
+tolerations:
+  - effect: NoSchedule
+    key: nvidia.com/gpu
+    value: "l40-gpu"
+    operator: Exists
 ----
 +
 *--disable-log-requests* is used to prevent the logging of detailed request information. By default, vLLM logs various details about each incoming request, which can be useful for debugging and monitoring. However, in production environments or when high performance is critical, excessive logging can consume resources and generate large log files. The --disable-log-requests flag addresses this by turning off the detailed logging of individual requests.
@@ -46,17 +86,25 @@ model:
 +
 *--max-model-len* argument sets the maximum number of tokens that the vLLM server will allow for a single sequence. This total includes both the user's prompt and the generated response combined.
 
-. Now that we've set the engine arguments we'll go ahead and deploy the granite model with Helm. Use `helm upgrade` if you already have a *granite-8b* model deployed.
+. Now that we've set the engine arguments we'll go ahead and re-deploy the granite model with Helm. We will uninstall and then reinstall the helm deployment
+
++
+[source,sh,role=execute]
+----
+helm uninstall granite-8b
+----
++
+
 +
 [source,sh,role=execute]
 ----
 helm install granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
-  -f workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml
+  -f workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n llm-hosting
 ----
 +
 [TIP]
 ====
-If you didn't add the redhat-ai-services helm chart repository to your local helm client, you can do so by running the following command:
+If you didn't add the redhat-ai-services helm chart repository (you should have done this in module 1.1) to your local helm client, you can do so by running the following command:
 
 [source,console,role=execute,subs=attributes+]
 ----
@@ -65,33 +113,13 @@ helm repo update redhat-ai-services
 ----
 ====
 
-. Login to OpenShift AI and go to your *vllm* Data Science Project. Wait until the model fully deploys (green check) before continuing. 
+. Login to OpenShift AI and go to your *LLM Host* Data Science Project. Wait until the model fully deploys (green check) before continuing. 
 +
-image::granite-deployed-rhoai.png[Granite deployed on RHOAI]
+image::granite-deployed.png[]
+// TO DO: Identify areas in this section that need to go to the previous.
+. We'll be running an OpenShift pipeline with GuideLLM to benchmark our model as we step through the optimizations. If you have not already deployed the GuideLLM pipeline, ensure you follow the steps from module 2 to do so.
 
-. We'll be running an OpenShift pipeline with GuideLLM to benchmark our model as we step through the optimizations. Clone the following repository. 
-+
-NOTE: No need to do this if you cloned the repository in module 2.
-+
-[source,sh,role=execute]
-----
-git clone https://github.com/jhurlocker/guidellm-pipeline.git
-----
-
-. Run the below commands to deploy the pipeline, tasks, and s3 bucket. 
-+
-NOTE: No need to do this if you executed these commands in module 2.
-+
-[source,sh,role=execute]
-----
-oc apply -f guidellm-pipeline/pipeline/upload-results-task.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/guidellm-pipeline.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/pvc.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/guidellm-benchmark-task.yaml -n vllm
-oc apply -f guidellm-pipeline/pipeline/mino-bucket.yaml -n vllm
-----
-
-. Lets run the GuideLLM pipeline! Open the _guidellm-pipeline/pipeline/guidellm-pipelinerun.yaml_ file. Let's go through some of the important GuideLLM arguments we're setting. The pipeline will run a benchmark for 1, 4, 8, and 16 concurrent users. 
+. Lets run the GuideLLM pipeline! Open the workshop_code/guidellm-pipeline/guidellm-pipelinerun.yaml file. Let's go through some of the important GuideLLM arguments we're setting. The pipeline will run a benchmark for 1, 4, 8, and 16 concurrent users. 
 +
 image::pipelinerun.png[pipelinerun]
 +
@@ -117,16 +145,16 @@ image::pipelinerun.png[pipelinerun]
 +
 6. *rate* - request rate.
 
-. Update the *target* parameter with your inference endpoint and run the pipeline:
+. Review the file to ensure all the parameters look accurate and then run the pipeline:
 +
 [source,sh,role=execute]
 ----
-oc create -f guidellm-pipeline/pipeline/guidellm-pipelinerun.yaml -n vllm
+oc create -f workshop_code/guidellm-pipeline/guidellm-pipelinerun.yaml -n llm-hosting
 ----
 
-. Go to your OpenShift console and view the pipeline run under your *vllm* project. Click on the bar under *Task Status*.
+. Go to your OpenShift console and view the pipeline run under your **llm-hosting** project. Click on the bar under *Task Status*.
 +
-image::ocp_pipelinerun_list.png[pipelinerun in ocp]
+image::ocp_pipelinerun_list.png[]
 +
 Note the two tasks in the pipeline. The first task runs the GuideLLM benchmark and saves the results to a PVC. The second task uploads the results to an s3 bucket. Feel free to click on each task to view the log files.
 +
@@ -144,13 +172,13 @@ NOTE: Feel free to use an existing workbench if you already have one running fro
 +
 image::upload_notebooks.png[upload notebooks]
 
-. Open the *graph_benchmarks.ipynb* notebook and run the first cell. This will download the benchmark file from s3 that was created and uploaded when we ran the pipeline. 
+. Open the *graph_benchmarks.ipynb* notebook and run the first cell. This will download the latest benchmark file from s3 that was created and uploaded when we ran the most recent pipeline. 
 +
 image::download_benchmark_results.png[downloading benchmark results from s3]
 
 . You should now see a *benchmark_<TIMESTAMP>.txt* file. This should be the latest time stamped benchmark in the s3 bucket. Open that file and in the top toolbar go to _View -> Wrap Words_ so you the file is easier to read. 
 +
-Review the results and notice the two columns highlighted in red. You can see the number of sequences under metadata benchmark and the related median TTFT. 
+Review the results. You can see the number of sequences under metadata benchmark and the related median TTFT. 
 +
 image::benchmark_results.png[benchmark results]
 
@@ -163,8 +191,7 @@ image::extract_results.png[extract benchmark results]
 image::ttft_chart.png[TTFT chart]
 
 . Rename the benchmark file as `benchmark_1.txt`. We'll use this file in a later exercise.
-
-//// 
+ 
 == Use
 
 We can use this script as our starting point and the way we're going to benchmark our model as we step through the optimizations:
@@ -233,15 +260,12 @@ done
 The script will simply spin up a vLLM instance and benchmark for a particular amount of concurrent users.
 To benchmark the model here, we're going to simulate an artificial "dataset" using "vllm bench" utility command.
 
-
-
 Here's the starting results on single NVIDIA L4 GPU at vllm (`d0dc4cfca`), focusing on TTFT:
 
 image::starting_point.png[starting_point]
 
 All reported times are in `ms`. All reported times are in milliseconds. Notice how quickly we exceed the "seconds" threshold with even a 
 slight increase in concurrent users—serving LLMs is hard!  
-////
 
 == vLLM Tuning Strategies for Granite 3.3 8B Latency
 
@@ -265,7 +289,7 @@ So the actual number limiting the amount of memory allocated for the model runti
 You can verify the impact of this parameter by increasing its value when starting vLLM and then observing the amount of memory reserved for KVCache.
 Check out the logs for our starting config:
 
-_Our starting config listed here for reference only. No need to apply it again_
+_An abbreviated version of our starting config listed here for reference only. No need to apply it again_
 ```
 deploymentMode: RawDeployment
 
@@ -279,7 +303,7 @@ model:
     - "--max-model-len=2048"
 ```
 
-. Go to your OpenShift web console. Select the *vllm* project and open the logs for the *granite-8b-predictor-00003-deploymentXXXXX* pod. 
+. Go to your OpenShift web console. Select the *llm-hosting* project and open the logs for the *granite-8b-predictor-00003-deploymentXXXXX* pod. 
 +
 image::granite-pod.png[Granite pod]
 +
@@ -293,7 +317,7 @@ INFO 08-26 19:08:24 [kv_cache_utils.py:715] GPU KV cache size: 27,488 tokens
 
 . Now increase the model size to `--max-model-len 4096 --max-num-batched-tokens 4096`:
 +
-Open _workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml_ and set the below configuration:
+Open _workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml_ and change the model arguments as in the below configuration (everything else should remain unchanged):
 +
 [source,sh,role=execute]
 ----
@@ -311,14 +335,20 @@ model:
 ----
 +
 . Rerun the helm deployment
+
 +
 [source,sh,role=execute]
 ----
-helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
-  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n vllm
+helm uninstall granite-8b
 ----
 
-. After the model is redeployed take a look at the KV Cache size in the pod's log file. Note that the KV Cache size is now smaller than it was before.
+[source,sh,role=execute]
+----
+helm install granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
+  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n llm-hosting
+----
+
+. After the model is redeployed take a look at the KV Cache size in the pod's log file (it will take a minute for the pod's logs to progress to show this data point). Note that the KV Cache size is now slightly smaller than it was before.
 +
 [subs=+quotes]
 ----
@@ -351,13 +381,19 @@ model:
 
 . Rerun the helm deployment
 +
+
 [source,sh,role=execute]
 ----
-helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
-  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n vllm
+helm uninstall granite-8b
 ----
 
-. After the model redeploys update the _/guidellm-pipeline/pipeline/guidellm-pipelinerun.yaml_ *rate* to 4.0. 
+[source,sh,role=execute]
+----
+helm install granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
+  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n llm-hosting
+----
+
+. After the model redeploys update the _/workshop_code/guidellm-pipeline/guidellm-pipelinerun.yaml_ *rate* to 4.0. 
 +
 image::benchmark_rate_4.png[set the rate to 4, align="left"]
 
@@ -365,7 +401,7 @@ image::benchmark_rate_4.png[set the rate to 4, align="left"]
 +
 [source,sh,role=execute]
 ----
-oc create -f guidellm-pipeline/pipeline/guidellm-pipelinerun.yaml -n vllm
+oc create -f workshop_code/guidellm-pipeline/guidellm-pipelinerun.yaml -n llm-hosting
 ----
 
 . After the pipeline finishes go to your OpenShift AI workbench and open the _graph_benchmarks.ipynb_ file. Execute the first cell to download the latest benchmark file.
@@ -578,57 +614,61 @@ V1 still not supporting this particular speculation technique. Mind that what we
 substantial architectural differences. 
 
 What to try: You'll need to specify a smaller draft model. A good starting point for Llama/granite might be a smaller Llama/granite variant or as in this 
-example a speculator trained specifically for our use-case. Let's change the vllm startup command:
-
-```bash
-VLLM_CMD="vllm serve $MODEL --max-num-seqs $MAX_NUM_SEQS --max-model-len 2048 --enable-chunked-prefill --max-num-batched-tokens 2048  --speculative-config\
- '{\"model\": \"ibm-granite/granite-3.0-8b-instruct-accelerator\", \"num_speculative_tokens\": 4, \"draft_tensor_parallel_size\": 1}' &"
-```
-
-+
-[source,sh,role=execute]
-----
-deploymentMode: RawDeployment
-
-fullnameOverride: granite-8b
-model:
-  modelNameOverride: granite-8b
-  uri: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct-accelerated
-  args:
-    - "--disable-log-requests"
-    - "--max-num-seqs=32"
-    - "--max-model-len=2048"
-    - "--max-num-batched-tokens=2048"
-    - "--enable-chunked-prefill"
-    - "--speculative_config={num_speculative_tokens: 4, draft_tensor_parallel_size: 1}"
-----
-
-. Rerun the helm deployment
-+
-[source,sh,role=execute]
-----
-helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
-  --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n vllm
-----
-
-vLLM will spin up an instance with the two models. 
-There's no free-lunch though, mind that the GPU memory will now be comprised of: the original `ibm-granite/granite-3.1-8b-instruct` weights + `ibm-granite/granite-3.0-8b-instruct-accelerator` proposer weights
- + a KV cache for *both* models.
-
-image::spec.png[specized]
+example a speculator trained specifically for our use-case. 
 
 
-A key metric to keep an eye on when serving a speculator is the `acceptance rate`:
-```
-INFO 07-17 11:11:38 [metrics.py:439] Speculative metrics: Draft acceptance rate: 0.381, System efficiency: 0.427, Number of speculative tokens: 3, Number of accepted tokens: 3781, Number of draft tokens: 9930, Number of emitted tokens: 5657.
-```
+// TO DO: Address Speculative decoding in RHOAI
+// Let's change the vllm startup command:
 
-This is the percentage of tokens being produced by the speculator that match the ones of the draft model.
-Here we're still on the lower side as ideally you would want to see this number be higher.
+// ```bash
+// VLLM_CMD="vllm serve $MODEL --max-num-seqs $MAX_NUM_SEQS --max-model-len 2048 --enable-chunked-prefill --max-num-batched-tokens 2048  --speculative-config\
+//  '{\"model\": \"ibm-granite/granite-3.0-8b-instruct-accelerator\", \"num_speculative_tokens\": 4, \"draft_tensor_parallel_size\": 1}' &"
+// ```
 
-This is tied to major drawback holding back the adoptability of speculative decoding, which is the fact that the speculator needs to be trained specifically for the model you intend to deploy,
-in order to achieve an high acceptance rate.
-Being a data-dependent technique, this is mostly useful when it is 
+// +
+// [source,sh,role=execute]
+// ----
+// deploymentMode: RawDeployment
+
+// fullnameOverride: granite-8b
+// model:
+//   modelNameOverride: granite-8b
+//   uri: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct-accelerated
+//   args:
+//     - "--disable-log-requests"
+//     - "--max-num-seqs=32"
+//     - "--max-model-len=2048"
+//     - "--max-num-batched-tokens=2048"
+//     - "--enable-chunked-prefill"
+//     - "--speculative_config={num_speculative_tokens: 4, draft_tensor_parallel_size: 1}"
+// ----
+
+// . Rerun the helm deployment
+// +
+// [source,sh,role=execute]
+// ----
+// helm upgrade -i granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
+//   --values workshop_code/deploy_vllm/vllm_rhoai_custom_2/values.yaml -n vllm
+// ----
+
+// vLLM will spin up an instance with the two models. 
+// There's no free-lunch though, mind that the GPU memory will now be comprised of: the original `ibm-granite/granite-3.1-8b-instruct` weights + `ibm-granite/granite-3.0-8b-instruct-accelerator` proposer weights
+//  + a KV cache for *both* models.
+
+// image::spec.png[specized]
+
+
+// A key metric to keep an eye on when serving a speculator is the `acceptance rate`:
+// ```
+// INFO 07-17 11:11:38 [metrics.py:439] Speculative metrics: Draft acceptance rate: 0.381, System efficiency: 0.427, Number of speculative tokens: 3, Number of accepted tokens: 3781, Number of draft tokens: 9930, Number of emitted tokens: 5657.
+// ```
+
+// This is the percentage of tokens being produced by the speculator that match the ones of the draft model.
+// Here we're still on the lower side as ideally you would want to see this number be higher.
+
+// This is tied to major drawback holding back the adoptability of speculative decoding, which is the fact that the speculator needs to be trained specifically for the model you intend to deploy,
+// in order to achieve an high acceptance rate.
+// Being a data-dependent technique, this is mostly useful when it is 
 
 == Bonus: Batch Processing Case Study: Throughput Optimization for granite-3.1-8b-instruct with vLLM
 What arguments would you change for a batch processing job that analyzes 100,000 customer reviews every night. 

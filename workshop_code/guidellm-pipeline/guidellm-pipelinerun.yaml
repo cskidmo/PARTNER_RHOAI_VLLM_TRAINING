@@ -5,7 +5,7 @@ metadata:
 spec:
   params:
     - name: target
-      value: 'https://granite-8b-vllm.apps.ocp.t4jx7.sandbox2175.opentlc.com/v1'
+      value: 'http://granite-8b-predictor.llm-hosting.svc.cluster.local:8080/v1'
     - name: model-name
       value: granite-8b
     - name: processor

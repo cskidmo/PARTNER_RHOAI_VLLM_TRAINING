@@ -52,7 +52,6 @@ Review optimization results, best practices summary, and guidelines for applying
 
 Before starting this module, ensure you have:
 * Completed Module 1 (Deployment) and Module 2 (Evaluation) 
-* Access to an OpenShift cluster with GPU resources
 * Basic understanding of inference serving concepts
 * GuideLLM benchmarking experience from Module 2
 
