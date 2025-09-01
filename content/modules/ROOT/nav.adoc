@@ -17,7 +17,8 @@
 ** xref:module-4.5-maas-analytics.adoc#maas_analytics[Module 4.5: Analytics & Monitoring]
 ** xref:module-4.6-maas-closing.adoc#maas_closing[Module 4.6: MaaS Conclusion]
 * xref:module-5.0-agentic-intro.adoc#agentic-intro[Module 5: Agentic AI for Operations]
-** xref:module-5.1-agentic-mcp-devops.adoc#agentic-mcp-devops[Module 5.1: MCP Server Integration]
+** xref:module-5.1-agentic-llamastack.adoc#agentic-llamastack[Module 5.1: Getting Started with Llama Stack]
+** xref:module-5.2-agentic-mcp-devops.adoc#agentic-mcp-devops[Module 5.2: System Administration with Agentic AI]
 
 * Reference Materials
 ** xref:reference-optimization-qualifying.adoc#optimization-qualifying[Enterprise Optimization Guide]
