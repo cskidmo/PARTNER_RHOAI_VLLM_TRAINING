@@ -19,6 +19,7 @@
 * xref:module-5.0-agentic-intro.adoc#agentic-intro[Module 5: Agentic AI for Operations]
 ** xref:module-5.1-agentic-llamastack.adoc#agentic-llamastack[Module 5.1: Getting Started with Llama Stack]
 ** xref:module-5.2-agentic-mcp-devops.adoc#agentic-mcp-devops[Module 5.2: System Administration with Agentic AI]
+** xref:module-5.3-agentic-conclusion.adoc#agentic-conclusion[Module 5.3: From Concept to Customer Value]
 
 * Reference Materials
 ** xref:reference-optimization-qualifying.adoc#optimization-qualifying[Enterprise Optimization Guide]
