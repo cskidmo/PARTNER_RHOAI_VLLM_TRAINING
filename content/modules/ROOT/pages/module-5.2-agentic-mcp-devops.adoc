@@ -276,18 +276,18 @@ List all Slack channels in our Slack workspace.
 
 Now, let's post a message to our Slack workspace.
 
-NOTE: Substitute `<insert-event-city-name>` with the city name of the event you are attending! Or write whatever appropriate message you fancy to our channel.
+NOTE: Substitute `<insert-message-here>` with something funny but **mostly appropriate** that I can laugh at later. Anything you fancy!
 
 [source,console,role=execute,subs=attributes+]
 ----
-Post a message to the #all-summit-connect-2025 channel: "Hi from <insert-event-city-name>".
+Post a message to the #etx-ai-singapore channel: "<insert-message-here>".
 ----
 
 === Send logs to Slack
 
 Now, let's try out a very real use case for this! It may not be done through a chat UI like this, but it's a good example of how you can use agentic AI to help you with your work. In a production environment, you would likely use a more robust automation to send logs or other information from your OpenShift cluster to Slack.
 
-Remember your role! You are a DevOps engineer. Let's send the logs for the ocp-mcp-server pod to the #all-summit-connect-2025 channel.
+Remember your role! You are a DevOps engineer. Let's send the logs for the ocp-mcp-server pod to the #etx-ai-singapore channel.
 
 If you do not have both MCP servers enabled, make sure they are now.
 
@@ -300,11 +300,11 @@ Get logs for the <ocp-mcp-server-pod-name> pod in the lls-demo namespace.
 
 NOTE: You will need to replace the `<ocp-mcp-server-pod-name>` with the actual pod name. You can find the pod name from the response to the list all pods prompt.
 
-Now, in a second message, post the logs to the #all-summit-connect-2025 channel:
+Now, in a second message, post the logs to the #etx-ai-singapore channel:
 
 [source,console,role=execute,subs=attributes+]
 ----
-Post this log information to the #all-summit-connect-2025 slack workspace channel.
+Post this log information to the #etx-ai-singapore slack workspace channel.
 ----
 
 Expected output should look something like this:

@@ -5,6 +5,8 @@
 
 In this module, you'll get a better understanding of Llama Stack, how its deployed in our OpenShift AI cluster, and learn how it connects to models and tools. We'll explore this foundational tool for building agentic AI applications on OpenShift AI.
 
+IMPORTANT: Before you begin, we will be adjusting a Llama Stack configmap manually during this exercise. This file is currently managed by GitOps. Please ensure, within ArgoCD, that the llama-stack app auto-sync is **disabled**. You can access ArgoCD via the OpenShift console top navigation bar.
+
 == What you'll accomplish
 
 * Learn about the Llama Stack operator and architecture
@@ -469,7 +471,7 @@ This integration provides valuable insights into:
 
 === Using the DataScienceCluster Resource to configure the LlamaStack Operator
 
-This section is for **information only** and should be supported in 2.23+ of RHOAI.
+This section is for **information only** and should be supported in 2.23+ of RHOAI. (we are on a v2.22 RHOAI cluster)
 
 [NOTE]
 ====
