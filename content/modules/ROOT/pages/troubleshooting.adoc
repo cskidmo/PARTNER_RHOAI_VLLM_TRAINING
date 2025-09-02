@@ -1,5 +1,0 @@
-Check Argo deployment status if there are any weird deployment issues. Ensure that the argo source is pointing to the right repository and branch.
-
-Evaluation
-- If there is an error applying resources it could be an intermittent connectivity issue. Please retry.
-
