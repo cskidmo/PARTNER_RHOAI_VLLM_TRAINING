@@ -57,6 +57,8 @@ For our lab today, we will utilize the tekton pipeline on our OpenShift AI clust
 
 First we will apply the PVC, task, and pipeline. We'll also create an s3 bucket in Minio where the pipeline will upload the benchmark results. The necessary files are in repository you have already cloned. This is a rudimentary deployment due to workshop timing restrictions and we would have this instead in a kustomize or helm deployment, depending on your preference.
 
+Follow this guide (https://ai-on-openshift.io/tools-and-applications/minio/minio/#create-a-bucket) to set up minio but name the minio bucket "guidellm-benchmark" instead of "mybucket"
+
 [source,console,role=execute,subs=attributes+]
 ----
 oc apply -f workshop_code/guidellm-pipeline/upload-results-task.yaml -n llm-hosting
