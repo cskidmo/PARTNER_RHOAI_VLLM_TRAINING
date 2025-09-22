@@ -189,23 +189,7 @@ lm-evaluation-harness https://github.com/red-hat-data-services/lm-evaluation-har
 +
 [TrustyAI Github](https://github.com/trustyai-explainability)
 
-. Try MMLU industry-focused test
-+
-In some cases, you may want to check that a model has retained accuracy around a standard, specific dataset topic. 
-+
-Let's try the mmlu_jurisprudence dataset to test the model's knowledge on law. Update the *base_url* to your external inference endpoint.
-+
-[source,console,role=execute,subs=attributes+]
-----
-oc apply -f workshop_code/evals/trusty/mmlu_jurisprudence.yaml -n vllm
-----
-+
-This will only take a minute or so to process. 
-+
-[source,console,role=execute,subs=attributes+]
-----
-oc get LMEvalJob mmlu-jurisprudence-eval-job -n vllm -o template --template '{{.status.results}}' | jq  .results
-----
+
 
 // TODO:### Testing your model with a custom dataset 
 
