@@ -64,13 +64,13 @@ For function calling models, the parser extracts structured tool calls from mode
 ## Deploy the vLLM model car chart
 
 ### install helm on bastion machine
-
+----
 curl -LO https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz
 tar -zxvf helm-v3.16.2-linux-amd64.tar.gz
 sudo mv linux-amd64/helm /usr/local/bin/helm
 helm version
 rm -rf linux-amd64 helm-v3.16.2-linux-amd64.tar.gz
-
+----
 
 ### Add the redhat-ai-services helm chart repository
 
