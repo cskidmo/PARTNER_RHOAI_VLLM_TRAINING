@@ -46,7 +46,7 @@ spec:
         from botocore.client import Config
 
         # --- Get credentials and endpoint from environment variables ---
-        S3_ENDPOINT_URL = 'http://minio.ic-shared-minio.svc.cluster.local:9000'
+        S3_ENDPOINT_URL = 'http://minio-service.showcase.svc.cluster.local:9000'
         S3_USERNAME = 'minio'
         S3_PASSWORD = 'minio123'
 
