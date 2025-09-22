@@ -3,35 +3,11 @@
 [#deploy-rhoai]
 # Deploy vLLM on OpenShift AI with kserve and model car
 
-0. == Prerequisites
-
-* An OpenShift cluster with NVIDIA GPUs available (by default, configurable) and configured properly (e.g. the NVIDIA GPU Operator). **This is provided in the lab environment.**
-** This cluster should be your current context, e.g. you see the correct cluster when you run `oc whoami --show-server`
-** You need permission to create Namespaces and consume GPUs, but do not require higher privilege to deploy these charts
-
-=== Clone the Workshop Repository
-
-Clone the following repository, you will use it a lot over the course of our training:
-
-[source,sh,role=execute]
-----
-git clone https://github.com/cskidmo/Intel_ETX_OCPAI_VLLM
-cd etx-ai-presales
-
-1. Log into your provided OpenShift environment. 
-
-We will use a kustomize deployment to deploy our model-car on vLLM in OpenShift AI. This helm chart is designed to be easily reusable and we recommend starting with this base for your deployment. In the previous module, the official Red Hat AI Inference Server image in the helm chart deployment on a standard OpenShift cluster. For the purposes of this training experience, we are using the vllm-kserve image on OpenShift AI. 
-
-If you do use the RHAIIS image as seen in the previous module, you will run into the authentication requirements required for pulling the image and it would add unnecessary barriers to the training experience. 
-
-You may view the helm chart at this link: https://github.com/redhat-ai-services/helm-charts/tree/main/charts/vllm-kserve.
-
-NOTE: This is a great chart for you to use and contribute to in the future in your work. Consulting aims to keep it updated and as standard as possible to make customizing and deploying models with kserve and vLLM as easy as possible.
 
 Let's take a look at our first provided custom values file for this workshop(etx-ai-presales/workshop_code/deploy_vllm/vllm_rhoai_custom_1/values.yaml):
 
 [source,console,subs=attributes+]
-----
+
 deploymentMode: RawDeployment
 
 fullnameOverride: granite-8b

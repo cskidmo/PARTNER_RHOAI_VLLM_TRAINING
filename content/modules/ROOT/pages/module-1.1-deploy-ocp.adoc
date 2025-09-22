@@ -14,6 +14,8 @@ In this module, we will use Helm to deploy RH Inference Server on OpenShift. The
 
 Clone the following repository, you will use it a lot over the course of our training:
 
+1. But first, log into your provided OpenShift environment via the ssh into your bastion. 
+
 [source,sh,role=execute]
 ----
 git clone https://github.com/cskidmo/Intel_ETX_OCPAI_VLLM
