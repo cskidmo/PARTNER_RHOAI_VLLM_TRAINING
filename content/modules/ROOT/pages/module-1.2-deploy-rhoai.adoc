@@ -7,7 +7,7 @@
 Let's take a look at our first provided custom values file for this workshop(etx-ai-presales/workshop_code/deploy_vllm/vllm_rhoai_custom_1/values.yaml):
 
 [source,console,subs=attributes+]
-
+----
 deploymentMode: RawDeployment
 
 fullnameOverride: granite-8b
