@@ -3,6 +3,21 @@
 [#deploy-rhoai]
 # Deploy vLLM on OpenShift AI with kserve and model car
 
+0. == Prerequisites
+
+* An OpenShift cluster with NVIDIA GPUs available (by default, configurable) and configured properly (e.g. the NVIDIA GPU Operator). **This is provided in the lab environment.**
+** This cluster should be your current context, e.g. you see the correct cluster when you run `oc whoami --show-server`
+** You need permission to create Namespaces and consume GPUs, but do not require higher privilege to deploy these charts
+
+=== Clone the Workshop Repository
+
+Clone the following repository, you will use it a lot over the course of our training:
+
+[source,sh,role=execute]
+----
+git clone https://github.com/cskidmo/Intel_ETX_OCPAI_VLLM
+cd etx-ai-presales
+
 1. Log into your provided OpenShift environment. 
 
 We will use a kustomize deployment to deploy our model-car on vLLM in OpenShift AI. This helm chart is designed to be easily reusable and we recommend starting with this base for your deployment. In the previous module, the official Red Hat AI Inference Server image in the helm chart deployment on a standard OpenShift cluster. For the purposes of this training experience, we are using the vllm-kserve image on OpenShift AI. 
@@ -24,7 +39,7 @@ model:
   modelNameOverride: granite-8b
   uri: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
   args:
-    - "--max-model-len=130000"
+    - "--max-model-len=1024"
     - "--enable-auto-tool-choice"
     - "--tool-call-parser=granite"
     - "--chat-template=/app/data/template/tool_chat_template_granite.jinja"
@@ -71,6 +86,15 @@ For function calling models, the parser extracts structured tool calls from mode
 - Use `pythonic` chat template when available for simpler configuration
 
 ## Deploy the vLLM model car chart
+
+### install helm on bastion machine
+
+curl -LO https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz
+tar -zxvf helm-v3.16.2-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+helm version
+rm -rf linux-amd64 helm-v3.16.2-linux-amd64.tar.gz
+
 
 ### Add the redhat-ai-services helm chart repository
 
