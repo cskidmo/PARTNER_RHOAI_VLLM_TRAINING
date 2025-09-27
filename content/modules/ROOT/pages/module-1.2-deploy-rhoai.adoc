@@ -31,11 +31,15 @@ image:
   runtimeVersionOverride: ""
 ----
 
+NOTE: The max model length for this deployment has been reduced to run cleanly on an single L4.  Just know that a typical deployment would likely have a large value associated with the max model length.
+
 You may substitute the modelcar for a different model and adjust the arguments as desired using vLLM standard args: https://docs.vllm.ai/en/stable/configuration/engine_args.html#named-arguments. 
 
 View our available modelcars here: https://quay.io/repository/redhat-ai-services/modelcar-catalog?tab=tags
 
 If you choose to use a different model you'll need to ensure to change the tool-call-parser and the chat-template fields appropriately. 
+
+If this is your first time with this lab it is probably best to stick with the standard model deployment provided.
 
 ## Understanding Chat Templates and Tool Calling
 
@@ -61,9 +65,17 @@ For function calling models, the parser extracts structured tool calls from mode
 - Tool parsers: https://docs.vllm.ai/en/latest/cli/index.html#-tool-call-parser
 - Use `pythonic` chat template when available for simpler configuration
 
+## install jq for an easier time with json
+[source,console,role=execute]
+----
+sudo dnf install -y jq
+----
+
 ## Deploy the vLLM model car chart
 
 ### install helm on bastion machine
+
+[source,console,role=execute]
 ----
 curl -LO https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz
 tar -zxvf helm-v3.16.2-linux-amd64.tar.gz
@@ -90,7 +102,7 @@ Switch to the **llm-hosting** project:
 
 [source,console,role=execute,subs=attributes+]
 ----
-oc project llm-hosting
+oc new-project llm-hosting
 ----
 
 NOTE: Ensure you're in the **etx-ai-presales** cloned repository in your local environment before continuing.
@@ -101,6 +113,12 @@ helm install granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
   -f workshop_code/deploy_vllm/vllm_rhoai_custom_1/values.yaml 
 ----
 
+we can watch the status with the command...
+[source,console,role=execute]
+----
+oc get pods -n llm-hosting -w
+----
+
 ## Verify deployment
 
 It will take about 10 minutes for the model deployment to be ready.
@@ -109,7 +127,7 @@ It will take about 10 minutes for the model deployment to be ready.
 
 image::granite-deployed-rhoai.png[Granite deployed on RHOAI]
 
-You may then useyour preferred method(s) to verify the successful deployment. We are not exposing an external route and the llm-hosting namespace within which we deployed the model has a network policy that blocks traffic from other namespaces. We will use a pod to curl the model.
+You may then use your preferred method(s) to verify the successful deployment. We are not exposing an external route and the llm-hosting namespace within which we deployed the model has a network policy that blocks traffic from other namespaces. We will use a pod to curl the model.
 
 ### Curl Models
 
@@ -118,7 +136,7 @@ Again, in the OpenShift console terminal:
 [source,sh,role=execute]
 ----
 oc -n llm-hosting run curl --image=curlimages/curl --restart=Never -it --rm -- \
-  curl -s http://granite-8b-predictor.llm-hosting.svc.cluster.local:8080/v1/models
+  curl -s http://granite-8b-predictor.llm-hosting.svc.cluster.local:8080/v1/models | jq .
 ----
 
 ## Conclusion

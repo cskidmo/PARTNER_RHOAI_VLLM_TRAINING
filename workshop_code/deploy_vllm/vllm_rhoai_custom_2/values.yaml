@@ -1,5 +1,3 @@
-deploymentMode: RawDeployment
-
 fullnameOverride: granite-8b
 model:
   modelNameOverride: granite-8b
@@ -45,5 +43,5 @@ servingRuntime:
 tolerations:
   - effect: NoSchedule
     key: nvidia.com/gpu
-    value: "l40-gpu"
+    value: "True"
     operator: Equal
