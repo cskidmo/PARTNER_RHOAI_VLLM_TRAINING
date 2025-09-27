@@ -78,7 +78,7 @@ to restart, and then TrustyAI should be ready to go.
 
 . Ensure Granite model is configured
 +
-Add the external endpoint to the *workshop_code/evals/trusty/arc_easy.yaml* file in the following section:
+Add the external endpoint to the *workshop_code/evals/trusty/arc_easy.yaml* file in the following section (it is likely if you have followed the lab to this point that this will already be correct in your yaml):
 +
 [source,console,role=execute,subs=attributes+]
 ----

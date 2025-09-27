@@ -14,7 +14,7 @@ In this module, we will use Helm to deploy RH Inference Server on OpenShift. The
 
 Clone the following repository, you will use it a lot over the course of our training:
 
-1. But first, log into your provided OpenShift environment via the ssh into your bastion. 
+1. But first, log into your provided OpenShift environment via the ssh into your bastion.  This should be provided to you with the proper credentials. The lab is designed to be run completely from the bastion machine so long as you are in the proper cloned directory (the next command)
 
 [source,sh,role=execute]
 ----

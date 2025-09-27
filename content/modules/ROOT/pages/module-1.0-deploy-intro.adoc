@@ -4,19 +4,16 @@
 
 == Introduction
 
-This module covers deploying Red Hat Inference Server (vLLM) across two key enterprise platforms. Each deployment target serves different architectural needs and operational requirements.
+This module covers deploying Red Hat Inference Server (vLLM) on OpenShift AI with one L4 powered gpu node.
 
 ## Deployment Targets
-
-**OpenShift (1.1)**: Container orchestration for scalable, multi-node deployments. Best for cloud-native architectures, horizontal scaling, and DevOps integration workflows.
 
 **OpenShift AI (1.2)**: Managed AI platform providing MLOps capabilities, data science workflows, and enterprise governance. Optimal for integrated AI pipelines and managed model serving.
 
 ## Learning Objectives
 
-- Deploy vLLM across three enterprise platforms
+- Deploy vLLM on OpenShift AI
 - Understand platform-specific configuration requirements
-- Compare deployment architectures and operational trade-offs
 - Establish foundation for performance evaluation and optimization
 
 ## Prerequisites
