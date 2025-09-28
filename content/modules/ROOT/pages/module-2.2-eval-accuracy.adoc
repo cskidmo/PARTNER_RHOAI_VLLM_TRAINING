@@ -90,7 +90,7 @@ Add the external endpoint to the *workshop_code/evals/trusty/arc_easy.yaml* file
 
 . Run the evaluation
 +
-To start an evaluation, apply an `LMEvalJob` custom resource as defined in the following file:
+To start an evaluation, apply an `LMEvalJob` custom resource as defined in the following file (it may take a few minutes, use and oc describe command of the pod if you're worried):
 +
 [source,console,role=execute,subs=attributes+]
 ----
@@ -100,7 +100,7 @@ oc apply -f workshop_code/evals/trusty/arc_easy.yaml -n llm-hosting
 Check out the arc_easy.yaml file to learn more about the `LMEvalJob` specification.
 +
 If everything has worked, you should see a pod called `arc-easy-eval-job` running in your namespace. 
-You can watch the progress of your evaluation job by running:
+You can watch the progress of your evaluation job (once the pod is finished being created) by running:
 +
 [source,console,role=execute,subs=attributes+]
 ----
