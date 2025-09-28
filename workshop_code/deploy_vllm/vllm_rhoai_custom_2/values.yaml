@@ -1,3 +1,5 @@
+deploymentMode: RawDeployment
+
 fullnameOverride: granite-8b
 model:
   modelNameOverride: granite-8b

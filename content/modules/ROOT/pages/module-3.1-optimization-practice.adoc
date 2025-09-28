@@ -171,7 +171,7 @@ If the pipeline finishes successfully the tasks will have green check marks like
 +
 image::ocp_pipelinerun_details.png[pipelinerun details in ocp]
 +
-NOTE: We'll view the results of the benchmark in the next section, but feel free to access your Minio instance and look at the files in the *guidellm-benchmark* bucket. 
+NOTE: We'll view the results of the benchmark in the next section, but feel free to access your Minio instance and look at the files in your minio bucket. 
 
 . Go to OpenShift AI and create a workbench with a *Standard Data Science* notebook. Everything else can be let as the default configuration.
 +
