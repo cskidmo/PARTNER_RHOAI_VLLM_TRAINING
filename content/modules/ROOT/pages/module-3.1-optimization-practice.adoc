@@ -178,7 +178,7 @@ NOTE: We'll view the results of the benchmark in the next section, but feel free
 +
 NOTE: Feel free to use an existing workbench if you already have one running from previous exercises. 
 
-. Open your workbench once it starts up and upload all of the files under *guidellm_notebook_charts*.
+. Open your workbench once it starts up and upload all of the files under *guidellm_notebook_charts*. These are in the repo files you cloned. It might be easier to download these to your local computer and the upload them through the OpenShift AI web ui.
 +
 image::upload_notebooks.png[upload notebooks]
 
