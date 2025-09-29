@@ -196,7 +196,7 @@ image::benchmark_results.png[benchmark results]
 +
 image::extract_results.png[extract benchmark results]
 
-. Finally, run the last cell in the notebook to graph the median TTFT per number of sequences. All reported times are in milliseconds. Notice how quickly we exceed the "seconds" threshold with even a slight increase in concurrent users—serving LLMs is hard!  
+. Finally, run the last cell in the notebook to graph the median TTFT per number of sequences. All reported times are in milliseconds. Notice how quickly we exceed the "seconds" threshold with even a slight increase in concurrent users—serving LLMs is hard! NOTE: If you are using one L4 for this lab then the curve will be even flatter! 
 +
 image::ttft_chart.png[TTFT chart]
 
