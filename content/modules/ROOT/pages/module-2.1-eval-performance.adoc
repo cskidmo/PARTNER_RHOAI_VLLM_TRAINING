@@ -55,7 +55,7 @@ For our lab today, we will utilize the tekton pipeline on our OpenShift AI clust
 * Version control / auditability
 * Better handling of complex, multi-stage workflows
 
-First we will apply the PVC, task, and pipeline. We'll also create an s3 bucket in Minio where the pipeline will upload the benchmark results. The necessary files are in repository you have already cloned. This is a rudimentary deployment due to workshop timing restrictions and we would have this instead in a kustomize or helm deployment, depending on your preference.
+First we will apply the PVC, task, and pipeline. We'll also create an s3 bucket in Minio (we just did this) where the pipeline will upload the benchmark results. The necessary files are in repository you have already cloned. This is a rudimentary deployment due to workshop timing restrictions and we would have this instead in a kustomize or helm deployment, depending on your preference.
 
 
 
@@ -211,10 +211,6 @@ To get to the MinIO user interface, get the route to the Minio UI. The login is:
 User: *minio*
 Password: *minio123*
 
-[source,console,role=execute,subs=attributes+]
-----
-oc get route console -n ic-shared-minio -o jsonpath='{.spec.host}'
-----
 
 Minio bucket
 
