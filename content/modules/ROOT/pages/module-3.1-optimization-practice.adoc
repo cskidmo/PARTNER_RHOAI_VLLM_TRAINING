@@ -35,7 +35,7 @@ model:
   uri: oci://quay.io/redhat-ai-services/modelcar-catalog:granite-3.3-8b-instruct
   args:
     - "--disable-log-requests"
-    - "--max-num-seqs=1"
+    - "--max-num-seqs=32"
     - "--max-model-len=2048"
 
 image:
