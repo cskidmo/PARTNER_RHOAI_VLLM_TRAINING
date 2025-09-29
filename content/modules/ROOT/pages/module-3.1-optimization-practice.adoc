@@ -74,8 +74,9 @@ servingRuntime:
 tolerations:
   - effect: NoSchedule
     key: nvidia.com/gpu
-    value: "l40-gpu"
-    operator: Exists
+    value: "True"
+    operator: Equal
+
 ----
 +
 *--disable-log-requests* is used to prevent the logging of detailed request information. By default, vLLM logs various details about each incoming request, which can be useful for debugging and monitoring. However, in production environments or when high performance is critical, excessive logging can consume resources and generate large log files. The --disable-log-requests flag addresses this by turning off the detailed logging of individual requests.
