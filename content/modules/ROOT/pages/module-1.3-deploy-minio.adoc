@@ -198,14 +198,15 @@ You should see a running Minio pod and two routes:
 == Create a matching Data Connection for Minio
 . In the RHOAI Dashboard, go to your Data Science Project
 . Click *Add data connection*
-. select the s3 option
-. Fill out the fields to match your Minio instance and bucket
-    name: My Data Connection
-    Access Key: minio
-    secret key: minio123
-    Endpoint: the api route in openshift NOT the ui route
-    region: us-east-1
-    bucket: guidellm-benchmark
+. Select the *S3* option
+. Fill out the fields to match your Minio instance and bucket:
+
+Name:: My Data Connection
+Access Key:: minio
+Secret Key:: minio123
+Endpoint:: the API route in OpenShift (NOT the UI route)
+Region:: us-east-1
+Bucket:: guidellm-benchmark
 
 
 
