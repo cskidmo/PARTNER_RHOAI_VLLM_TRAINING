@@ -4,7 +4,7 @@
 # Deploy vLLM on OpenShift AI with kserve and model car
 
 
-Let's take a look at our first provided custom values file for this workshop(etx-ai-presales/workshop_code/deploy_vllm/vllm_rhoai_custom_1/values.yaml):
+Let's take a look at our first provided custom values file for this workshop(workshop_code/deploy_vllm/vllm_rhoai_custom_1/values.yaml):
 
 [source,console,subs=attributes+]
 ----
