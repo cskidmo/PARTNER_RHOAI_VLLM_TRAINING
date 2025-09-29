@@ -50,7 +50,7 @@ Review optimization results, best practices summary, and guidelines for applying
 
 == Prerequisites
 
-Before starting this module, ensure you have:
+Before starting this module ensure you have:
 * Completed Module 1 (Deployment) and Module 2 (Evaluation) 
 * Basic understanding of inference serving concepts
 * GuideLLM benchmarking experience from Module 2
