@@ -113,7 +113,7 @@ helm install granite-8b redhat-ai-services/vllm-kserve --version 0.5.9 \
   -f workshop_code/deploy_vllm/vllm_rhoai_custom_1/values.yaml 
 ----
 
-we can watch the status with the command...
+It will take a while so we can watch the status with the command...
 [source,console,role=execute]
 ----
 oc get pods -n llm-hosting -w

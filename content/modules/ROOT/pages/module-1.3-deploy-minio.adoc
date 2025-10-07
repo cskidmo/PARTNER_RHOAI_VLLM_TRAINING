@@ -19,7 +19,7 @@ Nothing in this guide should be used in production-grade environments. Also, Min
 
 == Deploying Minio on OpenShift
 
-=== Create a Data Science Project (Optional)
+=== Create a Data Science Project (you must do this)
 If you already have your own Data Science Project, or OpenShift project, you can skip this step.
 
 . If your cluster already has Red Hat OpenShift AI installed, you can use the Dashboard Web Interface to create a Data Science project.
