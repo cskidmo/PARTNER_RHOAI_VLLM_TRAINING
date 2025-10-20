@@ -76,6 +76,9 @@ spec:
 
         export REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-bundle.crt"
 
+        echo "--- Upgrading pip to latest version ---"
+        pip install --upgrade pip
+
         echo "--- Installing guidellm ---"
         pip install git+https://github.com/vllm-project/guidellm.git
 
