@@ -80,7 +80,7 @@ spec:
         pip install --upgrade pip
 
         echo "--- Installing guidellm ---"
-        pip install git+https://github.com/vllm-project/guidellm.git
+        pip install guidellm==0.3.1
 
         # Create timestamped directory
         TIMESTAMP=$(date +%Y%m%d_%H%M%S)
